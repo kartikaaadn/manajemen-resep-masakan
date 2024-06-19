@@ -15,11 +15,11 @@ class ManajemenResep:
     def __init__(self, file_path='resep.csv'):
         self.daftar_resep = []
         self.file_path = file_path
-        self.impor_csv(self.file_path)  # Auto-import CSV data upon initialization
+        self.impor_csv(self.file_path) 
 
     def tambah_resep(self, resep):
         self.daftar_resep.append(resep)
-        self.simpan_csv(self.file_path)  # Save to CSV every time a new recipe is added
+        self.simpan_csv(self.file_path) 
 
     def lihat_resep(self):
         return self.daftar_resep
@@ -27,14 +27,14 @@ class ManajemenResep:
     def perbarui_resep(self, index, resep_baru):
         if 0 <= index < len(self.daftar_resep):
             self.daftar_resep[index] = resep_baru
-            self.simpan_csv(self.file_path)  # Save to CSV after updating
+            self.simpan_csv(self.file_path) 
             return True
         return False
 
     def hapus_resep(self, index):
         if 0 <= index < len(self.daftar_resep):
             del self.daftar_resep[index]
-            self.simpan_csv(self.file_path)  # Save to CSV after deleting
+            self.simpan_csv(self.file_path)
             return True
         return False
 
@@ -55,19 +55,19 @@ class ManajemenResep:
                 next(reader, None)  # Skip the header
                 self.daftar_resep = [Resep(row[0], row[1], row[2]) for row in reader]
         except FileNotFoundError:
-            pass  # Ignore if the file does not exist
+            pass 
 
     def simpan_csv(self, file_path):
         with open(file_path, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(['Nama Makanan', 'Bahan', 'Instruksi'])  # Write the header
+            writer.writerow(['Nama Makanan', 'Bahan', 'Instruksi']) 
             for resep in self.daftar_resep:
                 writer.writerow([resep.nama, resep.bahan, resep.instruksi])
 
     def perbarui_instruksi_resep(self, index, instruksi_baru):
         if 0 <= index < len(self.daftar_resep):
             self.daftar_resep[index].instruksi = instruksi_baru
-            self.simpan_csv(self.file_path)  # Save to CSV after updating instructions
+            self.simpan_csv(self.file_path) 
             return True
         return False
 
@@ -265,12 +265,6 @@ class ManajemenResepApp:
 
         btn_hapus = tk.Button(top, text="Hapus", command=delete_resep, bg="light blue")
         btn_hapus.pack(pady=5)
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = ManajemenResepApp(root)
-    root.mainloop()
-
 
 if __name__ == "__main__":
     root = tk.Tk()

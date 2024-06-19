@@ -41,10 +41,6 @@ class ManajemenResep:
     def cari_resep(self, keyword):
         hasil = [resep for resep in self.daftar_resep if keyword.lower() in resep.nama.lower() or keyword.lower() in resep.bahan.lower()]
         return hasil
-
-    def urutkan_resep(self, kriteria="nama"):
-        if kriteria == "nama":
-            self.daftar_resep.sort(key=lambda resep: resep.nama)
             
     def impor_csv(self, file_path):
         try:

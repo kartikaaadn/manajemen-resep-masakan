@@ -124,3 +124,83 @@ class ManajemenResepApp:
 
         btn_simpan = tk.Button(top, text="Simpan", command=simpan_resep, bg="light blue")
         btn_simpan.pack(pady=5)
+        
+    def lihat_resep(self):
+        top = tk.Toplevel(self.root)
+        top.title("Daftar Resep")
+
+        text_widget = tk.Text(top, wrap=tk.WORD)
+        text_widget.pack(expand=True, fill=tk.BOTH)
+
+        daftar_resep = self.manajemen_resep.lihat_resep()
+        for resep in daftar_resep:
+            text_widget.insert(tk.END, f"Nama: {resep.nama}\n")
+            text_widget.insert(tk.END, f"Bahan: {resep.bahan}\n")
+            text_widget.insert(tk.END, f"Instruksi: {resep.instruksi}\n")
+            text_widget.insert(tk.END, "\n" + "-"*40 + "\n\n")
+
+        text_widget.config(state=tk.DISABLED)
+
+    def cari_resep(self):
+        top = tk.Toplevel(self.root)
+        top.title("Cari Resep")
+
+        tk.Label(top, text="Masukkan keyword:").pack(pady=5)
+        entry_keyword = tk.Entry(top)
+        entry_keyword.pack(pady=5)
+
+        def cari():
+            keyword = entry_keyword.get()
+            hasil = self.manajemen_resep.cari_resep(keyword)
+            hasil_window = tk.Toplevel(top)
+            hasil_window.title("Hasil Pencarian")
+            text_widget = tk.Text(hasil_window, wrap=tk.WORD)
+            text_widget.pack(expand=True, fill=tk.BOTH)
+            for resep in hasil:
+                text_widget.insert(tk.END, f"Nama: {resep.nama}\n")
+                text_widget.insert(tk.END, f"Bahan: {resep.bahan}\n")
+                text_widget.insert(tk.END, f"Instruksi: {resep.instruksi}\n")
+                text_widget.insert(tk.END, "\n" + "-"*40 + "\n\n")
+            text_widget.config(state=tk.DISABLED)
+
+        btn_cari = tk.Button(top, text="Cari", command=cari, bg="light blue")
+        btn_cari.pack(pady=5)
+
+    def impor_csv(self):
+        file_path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+        if file_path:
+            self.manajemen_resep.impor_csv(file_path)
+            messagebox.showinfo("Info", "Data berhasil diimpor")
+
+    def perbarui_instruksi_resep(self):
+        top = tk.Toplevel(self.root)
+        top.title("Perbarui Instruksi Resep")
+
+        tk.Label(top, text="Indeks Resep:").pack(pady=5)
+        entry_indeks = tk.Entry(top)
+        entry_indeks.pack(pady=5)
+
+        tk.Label(top, text="Instruksi Baru:").pack(pady=5)
+        entry_instruksi_baru = tk.Text(top, height=5, width=50)
+        entry_instruksi_baru.pack(pady=5)
+
+        def update_instruksi():
+            try:
+                indeks = int(entry_indeks.get())
+                instruksi_baru = entry_instruksi_baru.get("1.0", tk.END).strip()
+                if self.manajemen_resep.perbarui_instruksi_resep(indeks, instruksi_baru):
+                    messagebox.showinfo("Info", "Instruksi resep berhasil diperbarui")
+                else:
+                    messagebox.showerror("Error", "Indeks resep tidak valid")
+                top.destroy()
+            except ValueError:
+                messagebox.showerror("Error", "Masukkan bilangan bulat untuk indeks")
+
+        btn_perbarui = tk.Button(top, text="Perbarui", command=update_instruksi, bg="light blue")
+        btn_perbarui.pack(pady=5)
+
+if __name__ == "_main_":
+    root = tk.Tk()
+    app = ManajemenResepApp(root)
+    root.mainloop()
+ 

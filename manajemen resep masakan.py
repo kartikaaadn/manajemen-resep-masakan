@@ -45,9 +45,7 @@ class ManajemenResep:
     def urutkan_resep(self, kriteria="nama"):
         if kriteria == "nama":
             self.daftar_resep.sort(key=lambda resep: resep.nama)
-        elif kriteria == "durasi":
-            self.daftar_resep.sort(key=lambda resep: resep.durasi)
-
+            
     def impor_csv(self, file_path):
         try:
             with open(file_path, mode='r', newline='', encoding='utf-8') as file:

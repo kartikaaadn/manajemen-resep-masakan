@@ -15,11 +15,11 @@ class ManajemenResep:
     def __init__(self, file_path='resep.csv'):
         self.daftar_resep = []
         self.file_path = file_path
-        self.impor_csv(self.file_path)
+        self.impor_csv(self.file_path)  # Auto-import CSV data upon initialization
 
     def tambah_resep(self, resep):
         self.daftar_resep.append(resep)
-        self.simpan_csv(self.file_path) 
+        self.simpan_csv(self.file_path)  # Save to CSV every time a new recipe is added
 
     def lihat_resep(self):
         return self.daftar_resep
@@ -27,14 +27,14 @@ class ManajemenResep:
     def perbarui_resep(self, index, resep_baru):
         if 0 <= index < len(self.daftar_resep):
             self.daftar_resep[index] = resep_baru
-            self.simpan_csv(self.file_path)  
+            self.simpan_csv(self.file_path)  # Save to CSV after updating
             return True
         return False
 
     def hapus_resep(self, index):
         if 0 <= index < len(self.daftar_resep):
             del self.daftar_resep[index]
-            self.simpan_csv(self.file_path)
+            self.simpan_csv(self.file_path)  # Save to CSV after deleting
             return True
         return False
 
@@ -52,26 +52,27 @@ class ManajemenResep:
         try:
             with open(file_path, mode='r', newline='', encoding='utf-8') as file:
                 reader = csv.reader(file, delimiter=',', quotechar='"')
-                next(reader, None) 
+                next(reader, None)  # Skip the header
                 self.daftar_resep = [Resep(row[0], row[1], row[2]) for row in reader]
         except FileNotFoundError:
-            pass  
+            pass  # Ignore if the file does not exist
 
     def simpan_csv(self, file_path):
         with open(file_path, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(['Nama Makanan', 'Bahan', 'Instruksi'])  
+            writer.writerow(['Nama Makanan', 'Bahan', 'Instruksi'])  # Write the header
             for resep in self.daftar_resep:
                 writer.writerow([resep.nama, resep.bahan, resep.instruksi])
 
     def perbarui_instruksi_resep(self, index, instruksi_baru):
         if 0 <= index < len(self.daftar_resep):
             self.daftar_resep[index].instruksi = instruksi_baru
-            self.simpan_csv(self.file_path)  
+            self.simpan_csv(self.file_path)  # Save to CSV after updating instructions
             return True
         return False
+
 class ManajemenResepApp:
-    def _init_(self, root):
+    def __init__(self, root):
         self.manajemen_resep = ManajemenResep()
         self.root = root
         self.root.title("Sistem Manajemen Resep Masakan")
@@ -80,7 +81,7 @@ class ManajemenResepApp:
         self.frame.pack(pady=10, padx=10)
 
         self.label = tk.Label(self.frame, text="Welcome to Sistem Manajemen Resep Masakan", font=("Helvetica", 16))
-        self.label.grid(row=0, columnspan=5, pady=10)
+        self.label.grid(row=0, columnspan=7, pady=10)
 
         self.btn_tambah = tk.Button(self.frame, text="Tambah Resep", command=self.tambah_resep, bg="light blue")
         self.btn_tambah.grid(row=1, column=0, padx=5, pady=5)
@@ -96,6 +97,12 @@ class ManajemenResepApp:
 
         self.btn_perbarui_instruksi = tk.Button(self.frame, text="Perbarui Instruksi Resep", command=self.perbarui_instruksi_resep, bg="light blue")
         self.btn_perbarui_instruksi.grid(row=1, column=4, padx=5, pady=5)
+
+        self.btn_perbarui_resep = tk.Button(self.frame, text="Perbarui Resep", command=self.perbarui_resep, bg="light blue")
+        self.btn_perbarui_resep.grid(row=1, column=5, padx=5, pady=5)
+
+        self.btn_hapus_resep = tk.Button(self.frame, text="Hapus Resep", command=self.hapus_resep, bg="light blue")
+        self.btn_hapus_resep.grid(row=1, column=6, padx=5, pady=5)
 
     def tambah_resep(self):
         top = tk.Toplevel(self.root)
@@ -124,7 +131,7 @@ class ManajemenResepApp:
 
         btn_simpan = tk.Button(top, text="Simpan", command=simpan_resep, bg="light blue")
         btn_simpan.pack(pady=5)
-        
+
     def lihat_resep(self):
         top = tk.Toplevel(self.root)
         top.title("Daftar Resep")
@@ -199,8 +206,73 @@ class ManajemenResepApp:
         btn_perbarui = tk.Button(top, text="Perbarui", command=update_instruksi, bg="light blue")
         btn_perbarui.pack(pady=5)
 
-if __name__ == "_main_":
+    def perbarui_resep(self):
+        top = tk.Toplevel(self.root)
+        top.title("Perbarui Resep")
+
+        tk.Label(top, text="Indeks Resep:").pack(pady=5)
+        entry_indeks = tk.Entry(top)
+        entry_indeks.pack(pady=5)
+
+        tk.Label(top, text="Nama Baru:").pack(pady=5)
+        entry_nama_baru = tk.Entry(top)
+        entry_nama_baru.pack(pady=5)
+
+        tk.Label(top, text="Bahan Baru:").pack(pady=5)
+        entry_bahan_baru = tk.Text(top, height=3, wrap=tk.WORD)
+        entry_bahan_baru.pack(pady=5)
+
+        tk.Label(top, text="Instruksi Baru:").pack(pady=5)
+        entry_instruksi_baru = tk.Text(top, height=5, width=50)
+        entry_instruksi_baru.pack(pady=5)
+
+        def update_resep():
+            try:
+                indeks = int(entry_indeks.get())
+                nama_baru = entry_nama_baru.get()
+                bahan_baru = entry_bahan_baru.get("1.0", tk.END).strip()
+                instruksi_baru = entry_instruksi_baru.get("1.0", tk.END).strip()
+                resep_baru = Resep(nama_baru, bahan_baru, instruksi_baru)
+                if self.manajemen_resep.perbarui_resep(indeks, resep_baru):
+                    messagebox.showinfo("Info", "Resep berhasil diperbarui")
+                else:
+                    messagebox.showerror("Error", "Indeks resep tidak valid")
+                top.destroy()
+            except ValueError:
+                messagebox.showerror("Error", "Masukkan bilangan bulat untuk indeks")
+
+        btn_perbarui = tk.Button(top, text="Perbarui", command=update_resep, bg="light blue")
+        btn_perbarui.pack(pady=5)
+
+    def hapus_resep(self):
+        top = tk.Toplevel(self.root)
+        top.title("Hapus Resep")
+
+        tk.Label(top, text="Indeks Resep:").pack(pady=5)
+        entry_indeks = tk.Entry(top)
+        entry_indeks.pack(pady=5)
+
+        def delete_resep():
+            try:
+                indeks = int(entry_indeks.get())
+                if self.manajemen_resep.hapus_resep(indeks):
+                    messagebox.showinfo("Info", "Resep berhasil dihapus")
+                else:
+                    messagebox.showerror("Error", "Indeks resep tidak valid")
+                top.destroy()
+            except ValueError:
+                messagebox.showerror("Error", "Masukkan bilangan bulat untuk indeks")
+
+        btn_hapus = tk.Button(top, text="Hapus", command=delete_resep, bg="light blue")
+        btn_hapus.pack(pady=5)
+
+if __name__ == "__main__":
     root = tk.Tk()
     app = ManajemenResepApp(root)
     root.mainloop()
- 
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ManajemenResepApp(root)
+    root.mainloop()
